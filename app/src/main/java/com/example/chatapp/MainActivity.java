@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.chatapp.fragments.ChatsFragment;
+import com.example.chatapp.fragments.ProfileFragment;
 import com.example.chatapp.fragments.UsersFragment;
 import com.example.chatapp.model.User;
 import com.google.android.material.tabs.TabLayout;
@@ -77,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
         viewPageAdapter.addFragment(new ChatsFragment(), "Chats");
         viewPageAdapter.addFragment(new UsersFragment(), "Users");
+        viewPageAdapter.addFragment(new ProfileFragment(), "Profile");
 
         viewPager.setAdapter(viewPageAdapter);
 
