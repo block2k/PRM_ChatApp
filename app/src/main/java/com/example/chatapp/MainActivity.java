@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity {
+    //LongBD3
     CircleImageView profile_image;
     TextView username_main;
 
