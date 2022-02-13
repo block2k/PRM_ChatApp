@@ -83,7 +83,7 @@ public class MessageActivity extends AppCompatActivity {
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String msg = text_send.getText().toString();
+                String msg = text_send.getText().toString().trim();
                 if (!"".equals(msg)) {
                     sendMessage(fuser.getUid(), userid, msg);
                 } else {
