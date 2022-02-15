@@ -49,6 +49,8 @@ public class MessageActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
 
+    ValueEventListener seenEventListener;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +77,7 @@ public class MessageActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         intent = getIntent();
-        String userid = intent.getStringExtra("userid");
+        String userIdOfPersonReceiveMessageFromLoggedUser = intent.getStringExtra("userid");
         fuser = FirebaseAuth.getInstance().getCurrentUser();
 
 
@@ -85,7 +87,7 @@ public class MessageActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String msg = text_send.getText().toString().trim();
                 if (!"".equals(msg)) {
-                    sendMessage(fuser.getUid(), userid, msg);
+                    sendMessage(fuser.getUid(), userIdOfPersonReceiveMessageFromLoggedUser, msg);
                 } else {
                     Toast.makeText(MessageActivity.this, "You can't send empty message", Toast.LENGTH_SHORT).show();
                 }
@@ -93,7 +95,7 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
-        reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(userIdOfPersonReceiveMessageFromLoggedUser);
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -105,7 +107,31 @@ public class MessageActivity extends AppCompatActivity {
                 } else {
                     Glide.with(getApplicationContext()).load(user.getImageURL()).into(profile_image);
                 }
-                loadMessage(fuser.getUid(), userid, user.getImageURL());
+                //user login, receiver
+                loadMessage(fuser.getUid(), userIdOfPersonReceiveMessageFromLoggedUser, user.getImageURL());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        seenMessage(userIdOfPersonReceiveMessageFromLoggedUser);
+    }
+
+    private void seenMessage(String userId) {
+        reference = FirebaseDatabase.getInstance().getReference("Chats");
+        seenEventListener = reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Chat chat = dataSnapshot.getValue(Chat.class);
+                    if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(userId)) {
+                        HashMap<String, Object> hashMap = new HashMap<>();
+                        hashMap.put("isSeen", "1");
+                        dataSnapshot.getRef().updateChildren(hashMap);
+                    }
+                }
             }
 
             @Override
@@ -115,7 +141,7 @@ public class MessageActivity extends AppCompatActivity {
         });
     }
 
-    private void loadMessage(String myid, String userid, String image_url) {
+    private void loadMessage(String sender, String receiver, String image_url) {
         mChat = new ArrayList<>();
 
         reference = FirebaseDatabase.getInstance().getReference("Chats");
@@ -126,7 +152,9 @@ public class MessageActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()
                 ) {
                     Chat chat = dataSnapshot.getValue(Chat.class);
-                    if (chat.getReceiver().equals(myid) && chat.getSender().equals(userid) || chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
+                    //nếu người nhận là người đang login và người gửi là người nhận
+//                    if (chat.getReceiver().equals(sender) && chat.getSender().equals(receiver) || chat.getReceiver().equals(receiver) && chat.getSender().equals(sender)) {
+                    if (chat.getReceiver().equals(receiver) && chat.getSender().equals(sender) || chat.getSender().equals(receiver) && chat.getReceiver().equals(sender)) {
                         mChat.add(chat);
                     }
 
@@ -149,6 +177,8 @@ public class MessageActivity extends AppCompatActivity {
         hashMap.put("sender", sender);
         hashMap.put("receiver", receiver);
         hashMap.put("message", message);
+        hashMap.put("isSeen", "0");
+
         reference.child("Chats").push().setValue(hashMap);
     }
 
@@ -178,6 +208,7 @@ public class MessageActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        reference.removeEventListener(seenEventListener);
         status("offline");
     }
 }
