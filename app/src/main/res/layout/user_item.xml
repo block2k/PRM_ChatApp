@@ -21,7 +21,8 @@
         android:layout_toEndOf="@id/profile_image"
         android:layout_toRightOf="@+id/profile_image"
         android:text="User name"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/img_on"
@@ -61,4 +62,16 @@
         android:maxLines="1"
         android:text="Message"
         android:textColor="@color/colorPrimaryDark" />
+
+    <TextView
+        android:id="@+id/number_of_chat_is_not_seen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/background_number"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:text="5"
+        android:textSize="18sp" />
 </RelativeLayout>

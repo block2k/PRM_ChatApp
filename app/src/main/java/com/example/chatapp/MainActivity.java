@@ -11,6 +11,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -19,6 +20,7 @@ import com.bumptech.glide.Glide;
 import com.example.chatapp.fragments.ChatsFragment;
 import com.example.chatapp.fragments.ProfileFragment;
 import com.example.chatapp.fragments.UsersFragment;
+import com.example.chatapp.model.Chat;
 import com.example.chatapp.model.User;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -76,15 +78,41 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         ViewPager viewPager = findViewById(R.id.view_pager);
 
-        ViewPageAdapter viewPageAdapter = new ViewPageAdapter(getSupportFragmentManager());
 
-        viewPageAdapter.addFragment(new ChatsFragment(), "Chats");
-        viewPageAdapter.addFragment(new UsersFragment(), "Users");
-        viewPageAdapter.addFragment(new ProfileFragment(), "Profile");
+        reference = FirebaseDatabase.getInstance().getReference("Chats");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                ViewPageAdapter viewPageAdapter = new ViewPageAdapter(getSupportFragmentManager());
+                int unread = 0;
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Chat chat = dataSnapshot.getValue(Chat.class);
+                    if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getIsSeen().equals("0")) {
+                        unread++;
+                    }
+                }
 
-        viewPager.setAdapter(viewPageAdapter);
+                if (unread == 0) {
+                    viewPageAdapter.addFragment(new ChatsFragment(), "Chats");
+                } else {
+                    viewPageAdapter.addFragment(new ChatsFragment(), "(" + unread + ") Chats");
+                }
 
-        tabLayout.setupWithViewPager(viewPager);
+                viewPageAdapter.addFragment(new UsersFragment(), "Users");
+                viewPageAdapter.addFragment(new ProfileFragment(), "Profile");
+
+                viewPager.setAdapter(viewPageAdapter);
+
+                tabLayout.setupWithViewPager(viewPager);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
     }
 
     //add option menu to toolbar

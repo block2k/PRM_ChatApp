@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class ResetPasswordActivity extends AppCompatActivity {
+    public static final String CHECK_YOUR_EMAIL = "Please check your Email";
     EditText send_email;
     Button btn_reset;
 
@@ -42,13 +43,13 @@ public class ResetPasswordActivity extends AppCompatActivity {
                 String email = send_email.getText().toString();
 
                 if (email.equals("")) {
-                    Toast.makeText(getApplicationContext(), "All field are required!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), Const.TEXT_REQUIRED_ALL_FIELDS, Toast.LENGTH_SHORT).show();
                 } else {
                     firebaseAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                Toast.makeText(getApplicationContext(), "Please check your Email", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), CHECK_YOUR_EMAIL, Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                             } else {
                                 String error = task.getException().getMessage();

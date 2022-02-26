@@ -51,16 +51,21 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         User user = mUsers.get(position);
         holder.username.setText(user.getUsername());
+
         if ("default".equals(user.getImageURL())) {
             holder.profile_image.setImageResource(R.mipmap.ic_launcher);
         } else {
             Glide.with(mContext).load(user.getImageURL()).into(holder.profile_image);
         }
+
         if (ischat) {
             lastMessage(user.getId(), holder.last_msg);
+            getNumberOfMessageNotRead(user.getId(), holder.numberOfMessageNotRead);
         } else {
+            holder.numberOfMessageNotRead.setVisibility(View.GONE);
             holder.last_msg.setVisibility(View.GONE);
         }
+
         if (ischat) {
             if (user.getStatus().equals("online")) {
                 holder.img_on.setVisibility(View.VISIBLE);
@@ -88,7 +93,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView username, last_msg;
+        public TextView username, last_msg, numberOfMessageNotRead;
         public ImageView profile_image;
         private ImageView img_on;
         private ImageView img_off;
@@ -100,6 +105,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             img_on = itemView.findViewById(R.id.img_on);
             img_off = itemView.findViewById(R.id.img_off);
             last_msg = itemView.findViewById(R.id.last_msg);
+            numberOfMessageNotRead = itemView.findViewById(R.id.number_of_chat_is_not_seen);
         }
     }
 
@@ -115,8 +121,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Chat chat = dataSnapshot.getValue(Chat.class);
                     if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
-                            chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())
-                    ) {
+                            chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
                         lastMessage = chat.getMessage();
                     }
                 }
@@ -128,6 +133,38 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                         last_msg.setText(lastMessage);
                 }
                 lastMessage = "default";
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void getNumberOfMessageNotRead(String userid, TextView textView) {
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chats");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int count = 0;
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Chat chat = dataSnapshot.getValue(Chat.class);
+
+                    if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) && chat.getIsSeen().equals("0") ||
+                            chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid()) && chat.getIsSeen().equals("0")) {
+                        count++;
+                    }
+
+                    if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid)) {
+                        textView.setVisibility(View.VISIBLE);
+                        if (count == 0) {
+                            textView.setVisibility(View.GONE);
+                        }
+                        textView.setText(String.valueOf(count));
+                    }
+                }
             }
 
             @Override

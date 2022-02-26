@@ -23,6 +23,17 @@ public class Chat {
         return time;
     }
 
+    @Override
+    public String toString() {
+        return "Chat{" +
+                "sender='" + sender + '\'' +
+                ", receiver='" + receiver + '\'' +
+                ", message='" + message + '\'' +
+                ", isSeen='" + isSeen + '\'' +
+                ", time=" + time +
+                '}';
+    }
+
     public void setTime(long time) {
         this.time = time;
     }
