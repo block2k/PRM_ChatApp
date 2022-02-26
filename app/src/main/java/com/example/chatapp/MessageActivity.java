@@ -51,6 +51,7 @@ public class MessageActivity extends AppCompatActivity {
 
     ValueEventListener seenEventListener;
 
+    String userid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +78,7 @@ public class MessageActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         intent = getIntent();
-        String userIdOfPersonReceiveMessageFromLoggedUser = intent.getStringExtra("userid");
+        userid = intent.getStringExtra("userid");
         fuser = FirebaseAuth.getInstance().getCurrentUser();
 
 
@@ -87,7 +88,7 @@ public class MessageActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String msg = text_send.getText().toString().trim();
                 if (!"".equals(msg)) {
-                    sendMessage(fuser.getUid(), userIdOfPersonReceiveMessageFromLoggedUser, msg);
+                    sendMessage(fuser.getUid(), userid, msg);
                 } else {
                     Toast.makeText(MessageActivity.this, "You can't send empty message", Toast.LENGTH_SHORT).show();
                 }
@@ -95,7 +96,7 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
-        reference = FirebaseDatabase.getInstance().getReference("Users").child(userIdOfPersonReceiveMessageFromLoggedUser);
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -108,7 +109,7 @@ public class MessageActivity extends AppCompatActivity {
                     Glide.with(getApplicationContext()).load(user.getImageURL()).into(profile_image);
                 }
                 //user login, receiver
-                loadMessage(fuser.getUid(), userIdOfPersonReceiveMessageFromLoggedUser, user.getImageURL());
+                loadMessage(fuser.getUid(), userid, user.getImageURL());
             }
 
             @Override
@@ -116,7 +117,7 @@ public class MessageActivity extends AppCompatActivity {
 
             }
         });
-        seenMessage(userIdOfPersonReceiveMessageFromLoggedUser);
+        seenMessage(userid);
     }
 
     private void seenMessage(String userId) {
@@ -177,9 +178,11 @@ public class MessageActivity extends AppCompatActivity {
         hashMap.put("sender", sender);
         hashMap.put("receiver", receiver);
         hashMap.put("message", message);
+        hashMap.put("time", System.currentTimeMillis());
         hashMap.put("isSeen", "0");
 
         reference.child("Chats").push().setValue(hashMap);
+
     }
 
     private void bindingView() {

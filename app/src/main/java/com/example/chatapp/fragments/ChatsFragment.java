@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.example.chatapp.R;
 import com.example.chatapp.adapter.UserAdapter;
 import com.example.chatapp.model.Chat;
 import com.example.chatapp.model.User;
+import com.example.chatapp.model.UserChatDto;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -24,6 +26,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,6 +42,7 @@ public class ChatsFragment extends Fragment {
     DatabaseReference reference;
 
     private List<String> usersList;
+    private List<UserChatDto> userChatDtoList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,12 +56,14 @@ public class ChatsFragment extends Fragment {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         usersList = new ArrayList<>();
+        userChatDtoList = new ArrayList<>();
 
         reference = FirebaseDatabase.getInstance().getReference("Chats");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 usersList.clear();
+                userChatDtoList.clear();
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
@@ -65,27 +72,19 @@ public class ChatsFragment extends Fragment {
                     assert chat != null;
                     //add list receiver
                     if (chat.getSender().equals(firebaseUser.getUid())) {
-
                         usersList.add(chat.getReceiver());
-
                     }
                     //add list sender
                     if (chat.getReceiver().equals(firebaseUser.getUid())) {
-
                         usersList.add(chat.getSender());
-
                     }
-
                 }
+
                 /*
                 sau khi add list người gửi và người nhận, nếu gửi bao nhiêu tin nhắn thì sẽ bị
                 add người nhận + người gửi bấy nhiêu lần => đang tìm cách (13/02/2022)
-
-                LONGBD3 fix (17/2/2022)
-                cách fix là dùng Set để loại bỏ các phần
-                tử trùng lặp trong cùng 1 list
                  */
-
+                //LONGBD3 fix (17/2/2022)
                 //remove duplicate elements in usersList
                 Set<String> hashSet = new HashSet<>(usersList);
                 usersList.clear();
@@ -115,7 +114,6 @@ public class ChatsFragment extends Fragment {
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     User user = snapshot.getValue(User.class);
-
                     for (String id : usersList) {
 
                         assert user != null;
