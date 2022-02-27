@@ -2,9 +2,12 @@ package com.example.chatapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,7 +36,7 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MessageActivity extends AppCompatActivity {
-    CircleImageView profile_image;
+    CircleImageView profile_image, profile_image_typing;
     TextView username;
 
     FirebaseUser fuser;
@@ -53,6 +56,8 @@ public class MessageActivity extends AppCompatActivity {
 
     String userid;
 
+    RelativeLayout typingLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,10 +71,13 @@ public class MessageActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MessageActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                Intent intent = new Intent(MessageActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
             }
         });
-        //binding view
+
         bindingView();
 
         recyclerView.setHasFixedSize(true);
@@ -96,6 +104,27 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
+        text_send.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.toString().trim().length() == 0) {
+                    checkTypingStatus("noOne");
+                } else {
+                    checkTypingStatus(userid); //user id of receiver
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
         reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
 
         reference.addValueEventListener(new ValueEventListener() {
@@ -103,11 +132,26 @@ public class MessageActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = snapshot.getValue(User.class);
                 username.setText(user.getUsername());
+
+                // display image profile in chat
                 if (user.getImageURL().equals("default")) {
                     profile_image.setImageResource(R.mipmap.ic_launcher);
                 } else {
                     Glide.with(getApplicationContext()).load(user.getImageURL()).into(profile_image);
                 }
+
+                // display typing status
+                if (user.getTypingTo().equals(fuser.getUid())) {
+                    typingLayout.setVisibility(View.VISIBLE);
+                    if (user.getImageURL().equals("default")) {
+                        profile_image_typing.setImageResource(R.mipmap.ic_launcher);
+                    } else {
+                        Glide.with(getApplicationContext()).load(user.getImageURL()).into(profile_image_typing);
+                    }
+                } else {
+                    typingLayout.setVisibility(View.GONE);
+                }
+
                 //user login, receiver
                 loadMessage(fuser.getUid(), userid, user.getImageURL());
             }
@@ -117,6 +161,7 @@ public class MessageActivity extends AppCompatActivity {
 
             }
         });
+
         seenMessage(userid);
     }
 
@@ -191,9 +236,12 @@ public class MessageActivity extends AppCompatActivity {
         username = findViewById(R.id.username);
         btn_send = findViewById(R.id.btn_send);
         text_send = findViewById(R.id.text_send);
+        typingLayout = findViewById(R.id.typing);
+        profile_image_typing = findViewById(R.id.profile_image_typing);
+
     }
 
-    private void status(String status) {
+    private void checkOnlineStatus(String status) {
         reference = FirebaseDatabase.getInstance().getReference("Users").child(fuser.getUid());
 
         HashMap<String, Object> hashMap = new HashMap<>();
@@ -202,16 +250,26 @@ public class MessageActivity extends AppCompatActivity {
         reference.updateChildren(hashMap);
     }
 
+    private void checkTypingStatus(String typing) {
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(fuser.getUid());
+
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("typingTo", typing);
+
+        reference.updateChildren(hashMap);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        status("online");
+        checkOnlineStatus("online");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         reference.removeEventListener(seenEventListener);
-        status("offline");
+        checkOnlineStatus("offline");
+        checkTypingStatus("noOne");
     }
 }

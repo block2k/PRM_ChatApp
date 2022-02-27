@@ -49,6 +49,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser == null) return;
+
         User user = mUsers.get(position);
         holder.username.setText(user.getUsername());
 
@@ -59,14 +62,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         }
 
         if (ischat) {
+            // display last message if in tab chats
             lastMessage(user.getId(), holder.last_msg);
-            getNumberOfMessageNotRead(user.getId(), holder.numberOfMessageNotRead);
-        } else {
-            holder.numberOfMessageNotRead.setVisibility(View.GONE);
-            holder.last_msg.setVisibility(View.GONE);
-        }
 
-        if (ischat) {
+            // display number of message not read
+            getNumberOfMessageNotRead(user.getId(), holder.numberOfMessageNotRead);
+
+            // display status if in tab chats
             if (user.getStatus().equals("online")) {
                 holder.img_on.setVisibility(View.VISIBLE);
                 holder.img_off.setVisibility(View.GONE);
@@ -75,6 +77,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                 holder.img_off.setVisibility(View.VISIBLE);
             }
         } else {
+            holder.last_msg.setVisibility(View.GONE);
             holder.img_on.setVisibility(View.GONE);
             holder.img_off.setVisibility(View.GONE);
         }
@@ -111,8 +114,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     //check last message
     private void lastMessage(String userid, TextView last_msg) {
-        lastMessage = "default";
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+//        lastMessage = "default";
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chats");
 
         reference.addValueEventListener(new ValueEventListener() {
@@ -125,14 +128,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                         lastMessage = chat.getMessage();
                     }
                 }
-                switch (lastMessage) {
-                    case "default":
-                        last_msg.setText("No message");
-                        break;
-                    default:
-                        last_msg.setText(lastMessage);
-                }
-                lastMessage = "default";
+//                switch (lastMessage) {
+//                    case "default":
+//                        last_msg.setText("No message");
+//                        break;
+//                    default:
+                last_msg.setText(lastMessage);
+//                }
+//                lastMessage = "default";
             }
 
             @Override

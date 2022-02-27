@@ -60,7 +60,6 @@
         android:layout_marginLeft="10dp"
         android:layout_toRightOf="@id/profile_image"
         android:maxLines="1"
-        android:text="Message"
         android:textColor="@color/colorPrimaryDark" />
 
     <TextView
@@ -73,5 +72,6 @@
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:text="5"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:visibility="gone" />
 </RelativeLayout>

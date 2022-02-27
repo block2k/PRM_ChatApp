@@ -28,4 +28,6 @@
         android:layout_below="@id/show_message"
         android:text="seen"
         android:visibility="gone" />
+
+
 </RelativeLayout>
