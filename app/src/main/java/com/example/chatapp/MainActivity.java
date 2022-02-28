@@ -127,8 +127,8 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             //click button logout
             case R.id.logout:
+                status("offline");
                 FirebaseAuth.getInstance().signOut();
-
                 startActivity(new Intent(MainActivity.this, StartActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 return true;
         }

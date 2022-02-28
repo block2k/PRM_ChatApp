@@ -6,44 +6,17 @@ public class Chat {
     private String receiver;
     private String message;
     private String isSeen;
-    private long time;
+    private String time;
 
-    public Chat(String sender, String receiver, String message, String isSeen, long time) {
+    public Chat() {
+    }
+
+    public Chat(String sender, String receiver, String message, String isSeen, String time) {
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
         this.isSeen = isSeen;
         this.time = time;
-    }
-
-    public Chat() {
-    }
-
-    public long getTime() {
-        return time;
-    }
-
-    @Override
-    public String toString() {
-        return "Chat{" +
-                "sender='" + sender + '\'' +
-                ", receiver='" + receiver + '\'' +
-                ", message='" + message + '\'' +
-                ", isSeen='" + isSeen + '\'' +
-                ", time=" + time +
-                '}';
-    }
-
-    public void setTime(long time) {
-        this.time = time;
-    }
-
-    public String getIsSeen() {
-        return isSeen;
-    }
-
-    public void setIsSeen(String isSeen) {
-        this.isSeen = isSeen;
     }
 
     public String getSender() {
@@ -68,5 +41,21 @@ public class Chat {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getIsSeen() {
+        return isSeen;
+    }
+
+    public void setIsSeen(String isSeen) {
+        this.isSeen = isSeen;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }

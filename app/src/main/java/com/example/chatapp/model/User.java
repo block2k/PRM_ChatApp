@@ -59,6 +59,18 @@ public class User {
     public User() {
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", username='" + username + '\'' +
+                ", imageURL='" + imageURL + '\'' +
+                ", status='" + status + '\'' +
+                ", search='" + search + '\'' +
+                ", typingTo='" + typingTo + '\'' +
+                '}';
+    }
+
     public User(String id, String username, String imageURL, String status, String search, String typingTo) {
         this.id = id;
         this.username = username;

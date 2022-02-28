@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/messageLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="8dp">
@@ -21,16 +22,27 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:background="@drawable/background_right"
-            android:padding="8dp"
+            android:padding="7dp"
             android:text="hello"
             android:textColor="#fff"
             android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/txt_seen"
+            android:id="@+id/timestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/show_message"
+            android:layout_alignParentEnd="true"
+            android:layout_toLeftOf="@id/txt_seen"
+            android:text="9:37 SA"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/txt_seen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/timestamp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:text="seen" />

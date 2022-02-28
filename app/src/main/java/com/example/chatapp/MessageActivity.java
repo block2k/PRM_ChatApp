@@ -54,7 +54,7 @@ public class MessageActivity extends AppCompatActivity {
 
     ValueEventListener seenEventListener;
 
-    String userid;
+    String userid, userChatting;
 
     RelativeLayout typingLayout;
 
@@ -71,10 +71,7 @@ public class MessageActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MessageActivity.this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                finish();
+                startActivity(new Intent(MessageActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         });
 
@@ -88,7 +85,6 @@ public class MessageActivity extends AppCompatActivity {
         intent = getIntent();
         userid = intent.getStringExtra("userid");
         fuser = FirebaseAuth.getInstance().getCurrentUser();
-
 
         //send message
         btn_send.setOnClickListener(new View.OnClickListener() {
@@ -132,7 +128,7 @@ public class MessageActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = snapshot.getValue(User.class);
                 username.setText(user.getUsername());
-
+                userChatting = user.getUsername();
                 // display image profile in chat
                 if (user.getImageURL().equals("default")) {
                     profile_image.setImageResource(R.mipmap.ic_launcher);
@@ -152,7 +148,6 @@ public class MessageActivity extends AppCompatActivity {
                     typingLayout.setVisibility(View.GONE);
                 }
 
-                //user login, receiver
                 loadMessage(fuser.getUid(), userid, user.getImageURL());
             }
 
@@ -198,13 +193,14 @@ public class MessageActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()
                 ) {
                     Chat chat = dataSnapshot.getValue(Chat.class);
-                    //nếu người nhận là người đang login và người gửi là người nhận
-//                    if (chat.getReceiver().equals(sender) && chat.getSender().equals(receiver) || chat.getReceiver().equals(receiver) && chat.getSender().equals(sender)) {
-                    if (chat.getReceiver().equals(receiver) && chat.getSender().equals(sender) || chat.getSender().equals(receiver) && chat.getReceiver().equals(sender)) {
+
+                    // get message between sender and receiver
+                    if (chat.getReceiver().equals(receiver) && chat.getSender().equals(sender) ||
+                            chat.getSender().equals(receiver) && chat.getReceiver().equals(sender)) {
                         mChat.add(chat);
                     }
 
-                    messageAdapter = new MessageAdapter(MessageActivity.this, mChat, image_url);
+                    messageAdapter = new MessageAdapter(MessageActivity.this, mChat, image_url, userChatting);
                     recyclerView.setAdapter(messageAdapter);
                 }
             }
@@ -223,7 +219,7 @@ public class MessageActivity extends AppCompatActivity {
         hashMap.put("sender", sender);
         hashMap.put("receiver", receiver);
         hashMap.put("message", message);
-        hashMap.put("time", System.currentTimeMillis());
+        hashMap.put("time", String.valueOf(System.currentTimeMillis()));
         hashMap.put("isSeen", "0");
 
         reference.child("Chats").push().setValue(hashMap);
@@ -238,7 +234,6 @@ public class MessageActivity extends AppCompatActivity {
         text_send = findViewById(R.id.text_send);
         typingLayout = findViewById(R.id.typing);
         profile_image_typing = findViewById(R.id.profile_image_typing);
-
     }
 
     private void checkOnlineStatus(String status) {
