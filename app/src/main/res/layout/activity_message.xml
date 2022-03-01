@@ -79,12 +79,19 @@
         android:background="#fff"
         android:padding="5dp">
 
+        <ImageButton
+            android:id="@+id/btn_send_image"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_image" />
+
         <EditText
             android:id="@+id/text_send"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/btn_send"
+            android:layout_toRightOf="@id/btn_send_image"
             android:background="@android:color/transparent"
             android:hint="Your message..."></EditText>
 

@@ -6,6 +6,7 @@
     android:padding="8dp">
 
     <RelativeLayout
+        android:id="@+id/first_layout"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true">
@@ -27,16 +28,34 @@
             android:textColor="#fff"
             android:textSize="18sp" />
 
+        <ImageView
+            android:id="@+id/msg_img"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:adjustViewBounds="true"
+            android:background="@drawable/background_right"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_image"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/second_layout"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/first_layout"
+        android:layout_alignParentEnd="true">
+
         <TextView
             android:id="@+id/timestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/show_message"
             android:layout_alignParentEnd="true"
-            android:layout_toLeftOf="@id/txt_seen"
             android:text="9:37 SA"
-            android:textSize="12sp"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/txt_seen"

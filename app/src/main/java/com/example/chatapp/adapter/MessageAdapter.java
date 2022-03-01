@@ -37,19 +37,21 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public static final int MSG_TYPE_RIGHT = 1;
     public static final String YOU_UNSENT_A_MESSAGE = "You unsent a message";
     public static final String WARNING_DELETE_MESSAGE = "Do you want to delete this message?";
+    public static final String MSG_TYPE_IMAGE = "image";
 
     private Context mContext;
     private List<Chat> mChats;
     private String image_url;
-    String userid;
+    String userid, username;
 
     FirebaseUser firebaseUser;
 
-    public MessageAdapter(Context mContext, List<Chat> mChats, String image_url, String userid) {
+    public MessageAdapter(Context mContext, List<Chat> mChats, String image_url, String userid, String username) {
         this.mContext = mContext;
         this.mChats = mChats;
         this.image_url = image_url;
         this.userid = userid;
+        this.username = username;
     }
 
     @NonNull
@@ -67,6 +69,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull MessageAdapter.ViewHolder holder, int position) {
         Chat chat = mChats.get(position);
+
+        if (chat.getType().equals(MSG_TYPE_IMAGE) && !chat.getMessage().equals(YOU_UNSENT_A_MESSAGE)) {
+            holder.msg_img.setVisibility(View.VISIBLE);
+            holder.show_message.setVisibility(View.GONE);
+            Glide.with(mContext).load(chat.getMessage()).into(holder.msg_img);
+        } else {
+            holder.msg_img.setVisibility(View.GONE);
+            holder.show_message.setVisibility(View.VISIBLE);
+        }
 
         displayNameOfUserDeletedMessage(chat);
 
@@ -197,13 +208,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView show_message, txt_seen, timestamp;
-        public ImageView profile_image;
+        public ImageView profile_image, msg_img;
         RelativeLayout messageLayout;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             show_message = itemView.findViewById(R.id.show_message);
             profile_image = itemView.findViewById(R.id.profile_image);
+            msg_img = itemView.findViewById(R.id.msg_img);
             txt_seen = itemView.findViewById(R.id.txt_seen);
             timestamp = itemView.findViewById(R.id.timestamp);
             messageLayout = itemView.findViewById(R.id.messageLayout);

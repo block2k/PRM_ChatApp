@@ -2,7 +2,6 @@ package com.example.chatapp.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +33,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     String lastMessage;
 
+    public static final String YOU_UNSENT_A_MESSAGE = "You unsent a message";
+
+
     public UserAdapter(Context mContext, List<User> mUsers, boolean ischat) {
         this.mContext = mContext;
         this.mUsers = mUsers;
@@ -63,7 +65,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
         if (ischat) {
             // display last message if in tab chats
-            lastMessage(user.getId(), holder.last_msg);
+            lastMessage(user, holder.last_msg);
 
             // display number of message not read
             getNumberOfMessageNotRead(user.getId(), holder.numberOfMessageNotRead);
@@ -113,7 +115,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     }
 
     //check last message
-    private void lastMessage(String userid, TextView last_msg) {
+    private void lastMessage(User user, TextView last_msg) {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 //        lastMessage = "default";
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chats");
@@ -123,8 +125,15 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Chat chat = dataSnapshot.getValue(Chat.class);
-                    if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
-                            chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
+                    if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(user.getId()) ||
+                            chat.getReceiver().equals(user.getId()) && chat.getSender().equals(firebaseUser.getUid())) {
+                        if (chat.getMessage().equals(YOU_UNSENT_A_MESSAGE)) {
+                            if (!firebaseUser.getUid().equals(chat.getSender())) {
+                                chat.setMessage(user.getUsername() + " unsent a message");
+                            }
+                        } else if (chat.getMessage().startsWith("https://")) {
+                            chat.setMessage(user.getUsername() + " sent you a photo");
+                        }
                         lastMessage = chat.getMessage();
                     }
                 }
