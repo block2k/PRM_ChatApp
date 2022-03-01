@@ -1,16 +1,15 @@
 package com.example.chatapp;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -96,6 +95,7 @@ public class RegisterActivity extends AppCompatActivity {
                     hashMap.put("imageURL", "default");
                     hashMap.put("status", "offline");
                     hashMap.put("typingTo", "noOne");
+                    hashMap.put("blocked", "no");
                     hashMap.put("search", username.toLowerCase());
 
                     reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {

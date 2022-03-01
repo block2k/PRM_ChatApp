@@ -30,6 +30,7 @@ import com.example.chatapp.model.User;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -51,9 +52,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MessageActivity extends AppCompatActivity {
     CircleImageView profile_image, profile_image_typing;
-    TextView username;
+    TextView username, block_user;
 
-    FirebaseUser fuser;
+    FirebaseUser firebaseUser;
     DatabaseReference reference;
 
     Intent intent;
@@ -68,9 +69,11 @@ public class MessageActivity extends AppCompatActivity {
 
     ValueEventListener seenEventListener;
 
-    String userid, userChatting;
+    String userid, userName;
 
-    RelativeLayout typingLayout;
+    boolean isBlocked;
+
+    RelativeLayout typingLayout, bottom;
 
     // upload image
     StorageReference storageReference;
@@ -98,7 +101,7 @@ public class MessageActivity extends AppCompatActivity {
         bindingView();
 
         storageReference = FirebaseStorage.getInstance().getReference("uploads");
-
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -107,30 +110,94 @@ public class MessageActivity extends AppCompatActivity {
 
         intent = getIntent();
         userid = intent.getStringExtra("userid");
-        fuser = FirebaseAuth.getInstance().getCurrentUser();
+        isBlocked = intent.getStringExtra("blocked").equals("yes");
 
         //send message
-        btn_send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String msg = text_send.getText().toString().trim();
-                if (!"".equals(msg)) {
-                    sendMessage(fuser.getUid(), userid, msg);
-                } else {
-                    Toast.makeText(MessageActivity.this, "You can't send empty message", Toast.LENGTH_SHORT).show();
-                }
-                text_send.setText("");
-            }
-        });
+        btn_send.setOnClickListener(this::onClickButtonSentMessage);
 
         // button send image
-        btn_send_image.setOnClickListener(new View.OnClickListener() {
+        btn_send_image.setOnClickListener(this::onClickButtonSentImage);
+
+        eventTypingMessage();
+
+        // block, unblock user
+        block_user.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openImage();
+                if (block_user.getText().toString().equals("Block User")) {
+                    blockUser(userid);
+                } else {
+                    unBlockUser(userid);
+                }
             }
         });
 
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User user = snapshot.getValue(User.class);
+                username.setText(user.getUsername());
+                userName = user.getUsername();
+                // display image profile in chat
+                if (user.getImageURL().equals("default")) {
+                    profile_image.setImageResource(R.mipmap.ic_launcher);
+                } else {
+                    Glide.with(getApplicationContext()).load(user.getImageURL()).into(profile_image);
+                }
+
+                // display typing status
+                if (user.getTypingTo().equals(firebaseUser.getUid())) {
+                    typingLayout.setVisibility(View.VISIBLE);
+                    if (user.getImageURL().equals("default")) {
+                        profile_image_typing.setImageResource(R.mipmap.ic_launcher);
+                    } else {
+                        Glide.with(getApplicationContext()).load(user.getImageURL()).into(profile_image_typing);
+                    }
+                } else {
+                    typingLayout.setVisibility(View.GONE);
+                }
+
+                loadMessage(firebaseUser.getUid(), userid, user.getImageURL());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        seenMessage(userid);
+
+        // kiểm tra xem user đang đăng nhập có bị chặn bởi những user khác không
+        checkLoggedUserIsBlockedByOtherUserOrNot();
+
+        // kiểm tra xem user đang đăng nhập có chặn tin nhắn của user này không
+        checkLoggedUserBlockedThisUser();
+    }
+
+    private void checkLoggedUserBlockedThisUser() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+        reference.child(firebaseUser.getUid()).child("BlockedUsers").orderByChild("uid").equalTo(userid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    if (dataSnapshot.exists()) {
+                        block_user.setText("Unblock User");
+                        bottom.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void eventTypingMessage() {
         text_send.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -151,35 +218,19 @@ public class MessageActivity extends AppCompatActivity {
 
             }
         });
+    }
 
-        reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
-
-        reference.addValueEventListener(new ValueEventListener() {
+    private void checkLoggedUserIsBlockedByOtherUserOrNot() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+        reference.child(userid).child("BlockedUsers").orderByChild("uid").equalTo(firebaseUser.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                User user = snapshot.getValue(User.class);
-                username.setText(user.getUsername());
-                userChatting = user.getUsername();
-                // display image profile in chat
-                if (user.getImageURL().equals("default")) {
-                    profile_image.setImageResource(R.mipmap.ic_launcher);
-                } else {
-                    Glide.with(getApplicationContext()).load(user.getImageURL()).into(profile_image);
-                }
-
-                // display typing status
-                if (user.getTypingTo().equals(fuser.getUid())) {
-                    typingLayout.setVisibility(View.VISIBLE);
-                    if (user.getImageURL().equals("default")) {
-                        profile_image_typing.setImageResource(R.mipmap.ic_launcher);
-                    } else {
-                        Glide.with(getApplicationContext()).load(user.getImageURL()).into(profile_image_typing);
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    if (dataSnapshot.exists()) {
+                        bottom.setVisibility(View.GONE);
+                        block_user.setVisibility(View.GONE);
                     }
-                } else {
-                    typingLayout.setVisibility(View.GONE);
                 }
-
-                loadMessage(fuser.getUid(), userid, user.getImageURL());
             }
 
             @Override
@@ -187,8 +238,60 @@ public class MessageActivity extends AppCompatActivity {
 
             }
         });
+    }
 
-        seenMessage(userid);
+    private void blockUser(String blockId) {
+        // block user by adding uid of current to BlockedUser node
+
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("uid", blockId);
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+        reference.child(firebaseUser.getUid()).child("BlockedUsers").child(blockId).setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                bottom.setVisibility(View.GONE);
+                block_user.setText("Unblock User");
+                Toast.makeText(getApplicationContext(), "Blocked user", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(), "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void unBlockUser(String unBlockId) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+        reference.child(firebaseUser.getUid()).child("BlockedUsers").orderByChild("uid").equalTo(unBlockId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    if (dataSnapshot.exists()) {
+                        dataSnapshot.getRef().removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                // unblock success
+                                bottom.setVisibility(View.VISIBLE);
+                                block_user.setText("Block User");
+                                Toast.makeText(getApplicationContext(), "Unblocked user", Toast.LENGTH_SHORT).show();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(getApplicationContext(), "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void openImage() {
@@ -230,7 +333,7 @@ public class MessageActivity extends AppCompatActivity {
                         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 
                         HashMap<String, Object> hashMap = new HashMap<>();
-                        hashMap.put("sender", fuser.getUid());
+                        hashMap.put("sender", firebaseUser.getUid());
                         hashMap.put("receiver", userid);
                         hashMap.put("message", mUri);
                         hashMap.put("time", String.valueOf(System.currentTimeMillis()));
@@ -279,7 +382,7 @@ public class MessageActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Chat chat = dataSnapshot.getValue(Chat.class);
-                    if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(userId)) {
+                    if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userId)) {
                         HashMap<String, Object> hashMap = new HashMap<>();
                         hashMap.put("isSeen", "1");
                         dataSnapshot.getRef().updateChildren(hashMap);
@@ -312,7 +415,7 @@ public class MessageActivity extends AppCompatActivity {
                         mChat.add(chat);
                     }
 
-                    messageAdapter = new MessageAdapter(MessageActivity.this, mChat, image_url, userChatting, userChatting);
+                    messageAdapter = new MessageAdapter(MessageActivity.this, mChat, image_url, userName, userName);
                     recyclerView.setAdapter(messageAdapter);
                 }
             }
@@ -347,11 +450,13 @@ public class MessageActivity extends AppCompatActivity {
         btn_send = findViewById(R.id.btn_send);
         text_send = findViewById(R.id.text_send);
         typingLayout = findViewById(R.id.typing);
+        block_user = findViewById(R.id.block_user);
         profile_image_typing = findViewById(R.id.profile_image_typing);
+        bottom = findViewById(R.id.bottom);
     }
 
     private void checkOnlineStatus(String status) {
-        reference = FirebaseDatabase.getInstance().getReference("Users").child(fuser.getUid());
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
 
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("status", status);
@@ -360,7 +465,7 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void checkTypingStatus(String typing) {
-        reference = FirebaseDatabase.getInstance().getReference("Users").child(fuser.getUid());
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
 
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("typingTo", typing);
@@ -380,5 +485,19 @@ public class MessageActivity extends AppCompatActivity {
         reference.removeEventListener(seenEventListener);
         checkOnlineStatus("offline");
         checkTypingStatus("noOne");
+    }
+
+    private void onClickButtonSentImage(View view) {
+        openImage();
+    }
+
+    private void onClickButtonSentMessage(View view) {
+        String msg = text_send.getText().toString().trim();
+        if (!"".equals(msg)) {
+            sendMessage(firebaseUser.getUid(), userid, msg);
+        } else {
+            Toast.makeText(MessageActivity.this, "You can't send empty message", Toast.LENGTH_SHORT).show();
+        }
+        text_send.setText("");
     }
 }

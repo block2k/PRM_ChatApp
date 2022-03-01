@@ -70,6 +70,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public void onBindViewHolder(@NonNull MessageAdapter.ViewHolder holder, int position) {
         Chat chat = mChats.get(position);
 
+        // display image view if message type is image, otherwise display textview
         if (chat.getType().equals(MSG_TYPE_IMAGE) && !chat.getMessage().equals(YOU_UNSENT_A_MESSAGE)) {
             holder.msg_img.setVisibility(View.VISIBLE);
             holder.show_message.setVisibility(View.GONE);

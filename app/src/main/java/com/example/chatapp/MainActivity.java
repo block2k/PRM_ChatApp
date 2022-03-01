@@ -1,5 +1,11 @@
 package com.example.chatapp;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,13 +14,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.chatapp.fragments.ChatsFragment;
@@ -66,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
                 if ("default".equals(user.getImageURL())) {
                     profile_image.setImageResource(R.mipmap.ic_launcher);
                 } else {
-
                     Glide.with(getApplicationContext()).load(user.getImageURL()).into(profile_image);
                 }
             }

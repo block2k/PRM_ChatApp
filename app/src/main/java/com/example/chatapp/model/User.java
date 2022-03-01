@@ -7,6 +7,20 @@ public class User {
     private String status;
     private String search;
     private String typingTo;
+    private String blocked;
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", username='" + username + '\'' +
+                ", imageURL='" + imageURL + '\'' +
+                ", status='" + status + '\'' +
+                ", search='" + search + '\'' +
+                ", typingTo='" + typingTo + '\'' +
+                ", blocked='" + blocked + '\'' +
+                '}';
+    }
 
     public String getId() {
         return id;
@@ -56,27 +70,24 @@ public class User {
         this.typingTo = typingTo;
     }
 
-    public User() {
+    public String getBlocked() {
+        return blocked;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id='" + id + '\'' +
-                ", username='" + username + '\'' +
-                ", imageURL='" + imageURL + '\'' +
-                ", status='" + status + '\'' +
-                ", search='" + search + '\'' +
-                ", typingTo='" + typingTo + '\'' +
-                '}';
+    public void setBlocked(String blocked) {
+        this.blocked = blocked;
     }
 
-    public User(String id, String username, String imageURL, String status, String search, String typingTo) {
+    public User(String id, String username, String imageURL, String status, String search, String typingTo, String blocked) {
         this.id = id;
         this.username = username;
         this.imageURL = imageURL;
         this.status = status;
         this.search = search;
         this.typingTo = typingTo;
+        this.blocked = blocked;
+    }
+
+    public User() {
     }
 }

@@ -55,14 +55,22 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         if (firebaseUser == null) return;
 
         User user = mUsers.get(position);
-        holder.username.setText(user.getUsername());
 
-        if ("default".equals(user.getImageURL())) {
-            holder.profile_image.setImageResource(R.mipmap.ic_launcher);
-        } else {
-            Glide.with(mContext).load(user.getImageURL()).into(holder.profile_image);
-        }
+        setInfoUserWhoChatting(holder, user);
 
+        checkUserIsBlocked(holder, firebaseUser, user);
+
+        loadUserChatting(holder, user);
+
+        holder.itemView.setOnClickListener(view -> {
+            Intent intent = new Intent(mContext, MessageActivity.class);
+            intent.putExtra("userid", user.getId());
+            intent.putExtra("blocked", user.getBlocked());
+            mContext.startActivity(intent);
+        });
+    }
+
+    private void loadUserChatting(@NonNull ViewHolder holder, User user) {
         if (ischat) {
             // display last message if in tab chats
             lastMessage(user, holder.last_msg);
@@ -83,11 +91,34 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             holder.img_on.setVisibility(View.GONE);
             holder.img_off.setVisibility(View.GONE);
         }
+    }
 
-        holder.itemView.setOnClickListener(view -> {
-            Intent intent = new Intent(mContext, MessageActivity.class);
-            intent.putExtra("userid", user.getId());
-            mContext.startActivity(intent);
+    private void setInfoUserWhoChatting(@NonNull ViewHolder holder, User user) {
+        holder.username.setText(user.getUsername());
+
+        if ("default".equals(user.getImageURL())) {
+            holder.profile_image.setImageResource(R.mipmap.ic_launcher);
+        } else {
+            Glide.with(mContext).load(user.getImageURL()).into(holder.profile_image);
+        }
+    }
+
+    private void checkUserIsBlocked(@NonNull ViewHolder holder, FirebaseUser firebaseUser, User user) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+        reference.child(firebaseUser.getUid()).child("BlockedUsers").orderByChild("uid").equalTo(user.getId()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    if (dataSnapshot.exists()) {
+                        holder.block_user.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
         });
     }
 
@@ -99,7 +130,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView username, last_msg, numberOfMessageNotRead;
-        public ImageView profile_image;
+        public ImageView profile_image, block_user;
         private ImageView img_on;
         private ImageView img_off;
 
@@ -111,6 +142,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             img_off = itemView.findViewById(R.id.img_off);
             last_msg = itemView.findViewById(R.id.last_msg);
             numberOfMessageNotRead = itemView.findViewById(R.id.number_of_chat_is_not_seen);
+            block_user = itemView.findViewById(R.id.block_user);
         }
     }
 

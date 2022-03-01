@@ -15,21 +15,24 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimaryDark"
+            android:background="@color/colorMessenger"
             android:theme="@style/Theme.Design.Light"
             app:popupTheme="@style/MenuStyle">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profile_image"
                 android:layout_width="30dp"
-                android:layout_height="30dp" />
+                android:layout_height="30dp"
+                android:src="@mipmap/ic_launcher" />
 
             <TextView
                 android:id="@+id/username_main"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
+                android:text="User name"
                 android:textColor="@color/white"
+                android:textSize="16sp"
                 android:textStyle="bold" />
         </androidx.appcompat.widget.Toolbar>
 
@@ -37,7 +40,7 @@
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimaryDark"
+            android:background="@color/colorMessenger"
             app:tabIndicatorColor="#fff"
             app:tabSelectedTextColor="#fff"
             app:tabTextColor="#fff" />
