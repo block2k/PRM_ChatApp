@@ -71,8 +71,6 @@ public class MessageActivity extends AppCompatActivity {
 
     String userid, userName;
 
-    boolean isBlocked;
-
     RelativeLayout typingLayout, bottom;
 
     // upload image
@@ -110,7 +108,6 @@ public class MessageActivity extends AppCompatActivity {
 
         intent = getIntent();
         userid = intent.getStringExtra("userid");
-        isBlocked = intent.getStringExtra("blocked").equals("yes");
 
         //send message
         btn_send.setOnClickListener(this::onClickButtonSentMessage);
@@ -446,7 +443,7 @@ public class MessageActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycler_view);
         profile_image = findViewById(R.id.profile_image);
         btn_send_image = findViewById(R.id.btn_send_image);
-        username = findViewById(R.id.username);
+        username = findViewById(R.id.group_sender);
         btn_send = findViewById(R.id.btn_send);
         text_send = findViewById(R.id.text_send);
         typingLayout = findViewById(R.id.typing);
@@ -496,7 +493,7 @@ public class MessageActivity extends AppCompatActivity {
         if (!"".equals(msg)) {
             sendMessage(firebaseUser.getUid(), userid, msg);
         } else {
-            Toast.makeText(MessageActivity.this, "You can't send empty message", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MessageActivity.this, Const.WARNING_SEND_MESSAGE, Toast.LENGTH_SHORT).show();
         }
         text_send.setText("");
     }

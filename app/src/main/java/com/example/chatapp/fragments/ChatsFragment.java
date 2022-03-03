@@ -23,6 +23,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,8 +34,8 @@ public class ChatsFragment extends Fragment {
     private UserAdapter userAdapter;
     private List<User> mUsers;
 
-    FirebaseUser firebaseUser;
-    DatabaseReference reference;
+    private FirebaseUser firebaseUser;
+    private DatabaseReference reference;
 
     private List<String> usersList;
 
@@ -109,6 +110,7 @@ public class ChatsFragment extends Fragment {
                         }
                     }
                 }
+                Collections.reverse(mUsers);
 
                 userAdapter = new UserAdapter(getContext(), mUsers, true);
                 recyclerView.setAdapter(userAdapter);

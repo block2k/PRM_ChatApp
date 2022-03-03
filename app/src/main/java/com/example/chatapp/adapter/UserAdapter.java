@@ -136,11 +136,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            username = itemView.findViewById(R.id.username);
+            username = itemView.findViewById(R.id.group_sender);
             profile_image = itemView.findViewById(R.id.profile_image);
             img_on = itemView.findViewById(R.id.img_on);
             img_off = itemView.findViewById(R.id.img_off);
-            last_msg = itemView.findViewById(R.id.last_msg);
+            last_msg = itemView.findViewById(R.id.group_message);
             numberOfMessageNotRead = itemView.findViewById(R.id.number_of_chat_is_not_seen);
             block_user = itemView.findViewById(R.id.block_user);
         }

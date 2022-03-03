@@ -17,6 +17,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
 import com.example.chatapp.fragments.ChatsFragment;
+import com.example.chatapp.fragments.GroupChatFragment;
 import com.example.chatapp.fragments.ProfileFragment;
 import com.example.chatapp.fragments.UsersFragment;
 import com.example.chatapp.model.Chat;
@@ -73,9 +74,9 @@ public class MainActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
+
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         ViewPager viewPager = findViewById(R.id.view_pager);
-
 
         reference = FirebaseDatabase.getInstance().getReference("Chats");
         reference.addValueEventListener(new ValueEventListener() {
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     viewPageAdapter.addFragment(new ChatsFragment(), "(" + unread + ") Chats");
                 }
-
+                viewPageAdapter.addFragment(new GroupChatFragment(), "Groups");
                 viewPageAdapter.addFragment(new UsersFragment(), "Users");
                 viewPageAdapter.addFragment(new ProfileFragment(), "Profile");
 
@@ -109,8 +110,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-
     }
 
     //add option menu to toolbar
@@ -128,10 +127,13 @@ public class MainActivity extends AppCompatActivity {
                 status("offline");
                 FirebaseAuth.getInstance().signOut();
                 startActivity(new Intent(MainActivity.this, StartActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                return true;
+                break;
+            case R.id.action_create_group:
+//                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                startActivity(new Intent(MainActivity.this, CreateGroupChatActivity.class));
+                break;
         }
-
-        return false;
+        return super.onOptionsItemSelected(item);
     }
 
     private void bindingView() {

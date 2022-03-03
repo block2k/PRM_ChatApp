@@ -73,7 +73,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void bindingView() {
-        username = findViewById(R.id.username);
+        username = findViewById(R.id.group_sender);
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         btn_register = findViewById(R.id.btn_register);
