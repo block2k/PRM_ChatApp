@@ -121,7 +121,7 @@ public class MessageActivity extends AppCompatActivity {
         block_user.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (block_user.getText().toString().equals("Block User")) {
+                if (block_user.getText().toString().equals("Block")) {
                     blockUser(userid);
                 } else {
                     unBlockUser(userid);
@@ -248,7 +248,7 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Void unused) {
                 bottom.setVisibility(View.GONE);
-                block_user.setText("Unblock User");
+                block_user.setText("Unblock");
                 Toast.makeText(getApplicationContext(), "Blocked user", Toast.LENGTH_SHORT).show();
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -271,7 +271,7 @@ public class MessageActivity extends AppCompatActivity {
                             public void onSuccess(Void unused) {
                                 // unblock success
                                 bottom.setVisibility(View.VISIBLE);
-                                block_user.setText("Block User");
+                                block_user.setText("Block");
                                 Toast.makeText(getApplicationContext(), "Unblocked user", Toast.LENGTH_SHORT).show();
                             }
                         }).addOnFailureListener(new OnFailureListener() {

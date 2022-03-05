@@ -15,7 +15,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorMessenger"
+            android:background="@color/colorPrimaryDark"
             android:theme="@style/Theme.Design.Light">
 
             <de.hdodenhof.circleimageview.CircleImageView
@@ -33,6 +33,15 @@
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/btn_add_member"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/ic_add_member_group" />
+
 
             <RelativeLayout
                 android:layout_width="match_parent"

@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.EditText;
@@ -48,12 +47,12 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class GroupChatActivity extends AppCompatActivity {
-    private String groupId;
+    private String groupId, myGroupRole;
 
     private CircleImageView group_icon;
     private TextView group_name;
     private RecyclerView recyclerView;
-    private ImageButton btn_send_image, btn_send;
+    private ImageButton btn_send_image, btn_send, btn_add_member;
     private EditText text_send;
 
     private FirebaseAuth firebaseAuth;
@@ -103,11 +102,19 @@ public class GroupChatActivity extends AppCompatActivity {
 
         btn_send.setOnClickListener(this::onClickButtonSendMessage);
         btn_send_image.setOnClickListener(this::onClickButtonSendImage);
+        btn_add_member.setOnClickListener(this::onClickButtonAddMember);
 
         loadGroupInfo();
-//
+
         loadGroupMessage();
     }
+
+    private void onClickButtonAddMember(View view) {
+        Intent intent = new Intent(GroupChatActivity.this, AddMemberGroupActivity.class);
+        intent.putExtra("groupId", groupId);
+        startActivity(intent);
+    }
+
 
     private void onClickButtonSendImage(View view) {
         openImage();
@@ -198,7 +205,6 @@ public class GroupChatActivity extends AppCompatActivity {
 
                 groupMessageAdapter = new GroupMessageAdapter(getApplicationContext(), groupMessageList);
                 recyclerView.setAdapter(groupMessageAdapter);
-                Log.i("loadGroupMessage", groupMessageList.toString());
             }
 
             @Override
@@ -279,5 +285,6 @@ public class GroupChatActivity extends AppCompatActivity {
         btn_send_image = findViewById(R.id.btn_send_image);
         btn_send = findViewById(R.id.btn_send);
         text_send = findViewById(R.id.text_send);
+        btn_add_member = findViewById(R.id.btn_add_member);
     }
 }

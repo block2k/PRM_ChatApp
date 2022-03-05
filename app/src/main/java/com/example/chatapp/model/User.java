@@ -8,18 +8,20 @@ public class User {
     private String search;
     private String typingTo;
     private String blocked;
+    private String email;
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id='" + id + '\'' +
-                ", username='" + username + '\'' +
-                ", imageURL='" + imageURL + '\'' +
-                ", status='" + status + '\'' +
-                ", search='" + search + '\'' +
-                ", typingTo='" + typingTo + '\'' +
-                ", blocked='" + blocked + '\'' +
-                '}';
+    public User() {
+    }
+
+    public User(String id, String username, String imageURL, String status, String search, String typingTo, String blocked, String email) {
+        this.id = id;
+        this.username = username;
+        this.imageURL = imageURL;
+        this.status = status;
+        this.search = search;
+        this.typingTo = typingTo;
+        this.blocked = blocked;
+        this.email = email;
     }
 
     public String getId() {
@@ -78,16 +80,25 @@ public class User {
         this.blocked = blocked;
     }
 
-    public User(String id, String username, String imageURL, String status, String search, String typingTo, String blocked) {
-        this.id = id;
-        this.username = username;
-        this.imageURL = imageURL;
-        this.status = status;
-        this.search = search;
-        this.typingTo = typingTo;
-        this.blocked = blocked;
+    public String getEmail() {
+        return email;
     }
 
-    public User() {
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", username='" + username + '\'' +
+                ", imageURL='" + imageURL + '\'' +
+                ", status='" + status + '\'' +
+                ", search='" + search + '\'' +
+                ", typingTo='" + typingTo + '\'' +
+                ", blocked='" + blocked + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }
