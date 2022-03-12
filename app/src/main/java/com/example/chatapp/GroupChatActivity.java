@@ -52,7 +52,7 @@ public class GroupChatActivity extends AppCompatActivity {
     private CircleImageView group_icon;
     private TextView group_name;
     private RecyclerView recyclerView;
-    private ImageButton btn_send_image, btn_send, btn_add_member;
+    private ImageButton btn_send_image, btn_send, btn_add_member, btn_group_info;
     private EditText text_send;
 
     private FirebaseAuth firebaseAuth;
@@ -74,16 +74,6 @@ public class GroupChatActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                startActivity(new Intent(GroupChatActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                startActivity(new Intent(GroupChatActivity.this, MainActivity.class));
-
-            }
-        });
 
         bindingView();
 
@@ -103,10 +93,17 @@ public class GroupChatActivity extends AppCompatActivity {
         btn_send.setOnClickListener(this::onClickButtonSendMessage);
         btn_send_image.setOnClickListener(this::onClickButtonSendImage);
         btn_add_member.setOnClickListener(this::onClickButtonAddMember);
+        btn_group_info.setOnClickListener(this::onClickButtonGroupInfo);
 
         loadGroupInfo();
 
         loadGroupMessage();
+    }
+
+    private void onClickButtonGroupInfo(View view) {
+        Intent intent = new Intent(GroupChatActivity.this, GroupInfoActivity.class);
+        intent.putExtra("groupId", groupId);
+        startActivity(intent);
     }
 
     private void onClickButtonAddMember(View view) {
@@ -286,5 +283,6 @@ public class GroupChatActivity extends AppCompatActivity {
         btn_send = findViewById(R.id.btn_send);
         text_send = findViewById(R.id.text_send);
         btn_add_member = findViewById(R.id.btn_add_member);
+        btn_group_info = findViewById(R.id.group_info);
     }
 }

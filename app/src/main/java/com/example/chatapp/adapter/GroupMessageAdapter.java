@@ -62,11 +62,13 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
         loadMessageFromGroupChat(holder, model);
 
         clickDisplayTimeMessage(holder);
+
     }
 
     private void clickDisplayTimeMessage(@NonNull ViewHolder holder) {
         holder.group_message.setOnClickListener(new View.OnClickListener() {
             boolean clickMessage = false;
+
             @Override
             public void onClick(View view) {
                 if (!clickMessage) {
@@ -80,6 +82,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
         });
         holder.message_image.setOnClickListener(new View.OnClickListener() {
             boolean clickMessage = false;
+
             @Override
             public void onClick(View view) {
                 if (!clickMessage) {

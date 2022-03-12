@@ -14,6 +14,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ChatApp">
         <activity
+            android:name=".EditGroupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".GroupInfoActivity"
+            android:exported="false" />
+        <activity
             android:name=".AddMemberGroupActivity"
             android:exported="false" />
         <activity
