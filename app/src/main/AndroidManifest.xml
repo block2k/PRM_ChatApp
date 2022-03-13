@@ -33,6 +33,18 @@
             android:exported="false"
             android:parentActivityName=".LoginActivity" />
         <activity
+            android:name=".MainChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".IntroductoryActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".MessageActivity"
             android:exported="false" />
         <activity
@@ -48,13 +60,7 @@
             android:parentActivityName=".StartActivity" />
         <activity
             android:name=".StartActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="true"></activity>
     </application>
 
 </manifest>
