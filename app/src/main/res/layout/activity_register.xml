@@ -26,7 +26,7 @@
             android:textStyle="bold" />
 
         <com.rengwuxian.materialedittext.MaterialEditText
-            android:id="@+id/username"
+            android:id="@+id/group_sender"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"

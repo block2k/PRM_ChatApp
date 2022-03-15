@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:padding="5dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/group_profile_image"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/ic_group" />
+
+    <TextView
+        android:id="@+id/group_sender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="3dp"
+        android:layout_toEndOf="@id/group_profile_image"
+        android:layout_toRightOf="@+id/group_profile_image"
+        android:text="Nguyen Van A"
+        android:textSize="10sp" />
+
+    <RelativeLayout
+        android:id="@+id/second_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/group_sender"
+        android:layout_toRightOf="@id/group_profile_image">
+
+        <ImageView
+            android:id="@+id/message_image"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:src="@mipmap/ic_launcher"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/group_message"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/background_right"
+            android:padding="7dp"
+            android:text="hello"
+            android:textColor="#fff"
+            android:textSize="18sp" />
+
+        <!--        <ImageButton-->
+        <!--            android:id="@+id/btn_reply"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_toRightOf="@id/group_message"-->
+        <!--            android:src="@drawable/ic_reply" />-->
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/third_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/second_layout"
+        android:layout_marginLeft="10dp"
+        android:layout_toEndOf="@id/group_profile_image">
+
+        <TextView
+            android:id="@+id/timestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="9:37 SA"
+            android:textSize="12sp"
+            android:visibility="gone" />
+    </RelativeLayout>
+</RelativeLayout>

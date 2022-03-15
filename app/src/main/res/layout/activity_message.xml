@@ -23,25 +23,75 @@
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profile_image"
                 android:layout_width="30dp"
-                android:layout_height="30dp" />
+                android:layout_height="30dp"
+                android:src="@mipmap/ic_launcher" />
 
             <TextView
-                android:id="@+id/username"
+                android:id="@+id/group_sender"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
+                android:text="User name"
                 android:textColor="@color/white"
+                android:textSize="16sp"
                 android:textStyle="bold" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true">
+
+                <TextView
+                    android:id="@+id/block_user"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:padding="10dp"
+                    android:text="Block"
+                    android:textColor="#FF0000"
+                    android:textSize="16sp" />
+            </RelativeLayout>
+
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottom"
-        android:layout_below="@+id/bar_layout" />
+        android:layout_above="@id/typing"
+        android:layout_below="@+id/bar_layout"
+        tools:listitem="@layout/chat_item_left" />
+
+    <RelativeLayout
+        android:id="@+id/typing"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bottom"
+        android:padding="8dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image_typing"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:id="@+id/show_message1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="8dp"
+            android:layout_toRightOf="@id/profile_image_typing"
+            android:background="@drawable/background_left"
+            android:padding="8dp"
+            android:text="..."
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/bottom"
@@ -51,12 +101,19 @@
         android:background="#fff"
         android:padding="5dp">
 
+        <ImageButton
+            android:id="@+id/btn_send_image"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_image" />
+
         <EditText
             android:id="@+id/text_send"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/btn_send"
+            android:layout_toRightOf="@id/btn_send_image"
             android:background="@android:color/transparent"
             android:hint="Your message..."></EditText>
 
