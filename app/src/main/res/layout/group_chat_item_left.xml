@@ -43,10 +43,9 @@
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_marginLeft="10dp"
-            android:background="@drawable/background_right"
+            android:background="@drawable/background_left"
             android:padding="7dp"
             android:text="hello"
-            android:textColor="#fff"
             android:textSize="18sp" />
 
         <!--        <ImageButton-->
