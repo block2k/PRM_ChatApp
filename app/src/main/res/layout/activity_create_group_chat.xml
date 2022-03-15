@@ -21,7 +21,14 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/ic_group" />
+            android:src="@mipmap/ic_launcher" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@id/group_icon"
+            android:layout_alignBottom="@id/group_icon"
+            android:src="@drawable/ic_camera" />
 
         <EditText
             android:id="@+id/edt_group_title"
